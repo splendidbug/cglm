@@ -1,0 +1,123 @@
+#include <GL/freeglut.h>
+#include <GL/gl.h>
+#include <math.h>
+#include <stdio.h>
+int px1;
+int px2;
+int py1;
+int py2;
+void draw_pixel(int,int);
+void BRESENHAM_ALGO(int,int,int,int);
+void renderFunction()
+{
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0, 1.0, 1.0);
+    //glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();   
+    gluOrtho2D(0.0,640.0,0.0,480.0);
+    BRESENHAM_ALGO(320,0,320,480);	//Y - AXIS
+   BRESENHAM_ALGO(0,240,640,240);	//X - AXIS	
+   BRESENHAM_ALGO(px1,py1,px2,py1);	//LINE - 1 TO 2 
+   BRESENHAM_ALGO(px2,py1,px2,py2);	//LINE 2 TO 3
+   BRESENHAM_ALGO(px2,py2,px1,py2);	//LINE 3 TO 4	
+   BRESENHAM_ALGO(px1,py2,px1,py1);	//LINE 4 TO 1
+   BRESENHAM_ALGO(px1,((py1+py2)/2),((px1+px2)/2),py2);	//LINE 5 TO 8
+  BRESENHAM_ALGO(((px1+px2)/2),py2,px2,((py1+py2)/2));	//LINE 8 TO 7
+  BRESENHAM_ALGO(px2,((py1+py2)/2),((px1+px2)/2),py1);	//LINE 7 TO 6
+    BRESENHAM_ALGO(((px1+px2)/2),py1,px1,((py1+py2)/2));	//LINE 6 TO 5
+     BRESENHAM_ALGO((((3*px1)+px2)/4),(((3*py1)+py2)/4),(((3*px1)+px2)/4),(((3*py2)+py1)/4));	//LINE 9 TO 12
+     BRESENHAM_ALGO((((3*px1)+px2)/4),(((3*py2)+py1)/4),(((3*px2)+px1)/4),(((3*py2)+py1)/4));	//LINE 12 TO 11
+     BRESENHAM_ALGO((((3*px2)+px1)/4),(((3*py2)+py1)/4),(((3*px2)+px1)/4),(((3*py1)+py2)/4));	//LINE 11 TO 10
+     BRESENHAM_ALGO((((3*px2)+px1)/4),(((3*py1)+py2)/4),(((3*px1)+px2)/4),(((3*py1)+py2)/4));	//LINE 10 TO 9
+glFlush();
+
+
+}
+
+void draw_pixel(int x ,int y)
+{
+  glBegin(GL_POINTS);
+    glVertex2i(x,y);
+    glEnd();
+
+
+
+}
+void BRESENHAM_ALGO(int x1, int y1, int x2, int y2) {
+	int dx, dy, i, p;
+	int incx, incy, inc1, inc2;
+	int x,y;
+
+	dx = x2-x1;
+	dy = y2-y1;
+
+	if (dx < 0) dx = -dx;
+	if (dy < 0) dy = -dy;
+	incx = 1;
+	if (x2 < x1) incx = -1;
+	incy = 1;
+	if (y2 < y1) incy = -1;
+	x = x1; y = y1;
+	if (dx > dy) {
+		draw_pixel(x, y);
+		p = 2 * dy-dx;
+		inc1 = 2*(dy-dx);
+		inc2 = 2*dy;
+		for (i=0; i<dx; i++) {
+			if (p > 0) {
+				y += incy;
+				p += inc1;
+			}
+			else
+				p += inc2;
+			x += incx;
+			draw_pixel(x, y);
+		}
+
+	} else {
+		draw_pixel(x, y);
+		p = 2*dx-dy;
+		inc1 = 2*(dx-dy);
+		inc2 = 2*dx;
+		for (i=0; i<dy; i++) {
+			if (p > 0) {
+				x += incx;
+				p += inc1;
+			}
+			else
+				p += inc2;
+			y += incy;
+			draw_pixel(x, y);
+		}
+	}
+}
+
+
+
+
+
+
+int main(int argc, char** argv)
+{   printf("\n*************** ENTER THE CO-ORDINATES ***************\n");
+    printf("\n**** FIRST POINT ****");
+    printf("\nENTER X1: ");
+    scanf("%d",&px1);
+    printf("\nENTER Y1: ");
+    scanf("%d",&py1);
+    printf("\n**** SECCOND POINT ****");
+    printf("\nENTER X2: ");
+    scanf("%d",&px2);
+    printf("\nENTER Y2: ");
+    scanf("%d",&py2);
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_SINGLE);
+    glutInitWindowSize(500,500);
+    glutInitWindowPosition(100,100);
+    glutCreateWindow("BRESENHAM-LINE DRAWING ALGORITHM");
+    glutDisplayFunc(renderFunction);
+    glutMainLoop();    
+    return 0;
+}
+
+
